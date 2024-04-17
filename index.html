@@ -1,0 +1,673 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Kotlin Tutorial</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        margin: 0;
+        padding: 0;
+      }
+
+      header {
+        background-color: #333;
+        color: #fff;
+        text-align: center;
+        padding: 20px 0;
+      }
+
+      h1 {
+        margin: 0;
+      }
+
+      nav {
+        background-color: #f4f4f4;
+        padding: 20px 30px;
+        text-align: center;
+        overflow-x: auto;
+        white-space: nowrap;
+      }
+
+      nav ul {
+        list-style-type: none;
+        padding: 0;
+        margin: 0;
+        display: flex;
+        justify-content: center;
+      }
+
+      nav li {
+        margin-right: 20px;
+      }
+
+      nav li a {
+        text-decoration: none;
+        color: #333;
+        padding: 5px;
+        margin: 5px;
+        border-radius: 5px;
+        background-color: #ddd;
+        transition: background-color 0.3s ease;
+      }
+
+      nav li a:hover {
+        background-color: #ccc;
+      }
+
+      main {
+        padding: 20px;
+      }
+
+      .code-section {
+        display: none;
+        background-color: #f9f9f9;
+        border: 1px solid #ddd;
+        border-radius: 5px;
+        padding: 20px;
+        margin-bottom: 20px;
+      }
+
+      pre {
+        margin: 0;
+      }
+
+      code.kotlin {
+        display: block;
+        background-color: #f5f5f5;
+        padding: 10px;
+        overflow-x: auto;
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <h1>Kotlin Tutorial</h1>
+    </header>
+
+    <nav>
+      <ul id="tutorialTabs"></ul>
+    </nav>
+
+    <main id="tutorialContent"></main>
+
+    <footer>
+      <!-- Footer content -->
+    </footer>
+
+    <script>
+      document.addEventListener("DOMContentLoaded", function () {
+        const tutorials = [
+          {
+            title: "Kotlin Basics",
+            id: "kotlin-basics",
+            codeSnippets: [
+              `
+// Kotlin code snippet for email validation
+private fun isValidEmail(email: String): Boolean {
+    return Patterns.EMAIL_ADDRESS.matcher(email).matches()
+}`,
+              `
+// Kotlin code snippet for mobile number validation
+private fun isValidMobile(mobile: String): Boolean {
+    return mobile.length == 10 && mobile.all { it.isDigit() }
+}`,
+              `
+// Kotlin code snippet for button click listener setup
+private lateinit var registerButton: Button
+registerButton = findViewById(R.id.registerButton)
+registerButton.setOnClickListener {
+    // Your onClickListener logic goes here
+}`,
+              `
+// Kotlin code snippet for text encryption using Caesar cipher
+private fun encrypt(text: String): String {
+    val shift = 3 // Shift for Caesar cipher, you can change this value
+    val encryptedText = StringBuilder()
+    for (char in text) {
+        if (char.isLetter()) {
+            val shiftedChar = (char.toInt() + shift)
+            encryptedText.append(if (char.isLowerCase()) {
+                if (shiftedChar > 'z'.toInt()) (shiftedChar - 26).toChar() else shiftedChar.toChar()
+            } else {
+                if (shiftedChar > 'Z'.toInt()) (shiftedChar - 26).toChar() else shiftedChar.toChar()
+            })
+        } else {
+            encryptedText.append(char)
+        }
+    }
+    return encryptedText.toString()
+}`,
+            ],
+          },
+          {
+            title: "Radio group & background color",
+            id: "radio-group-background-color",
+            codeSnippets: [
+              `
+// Kotlin code snippet for radio group and background color
+val colorRadioGroup: RadioGroup = findViewById(R.id.colorRadioGroup)
+
+colorRadioGroup.setOnCheckedChangeListener { group, checkedId ->
+    val selectedRadioButton: RadioButton = findViewById(checkedId)
+    val color = when (selectedRadioButton.id) {
+        R.id.redRadioButton -> Color.RED
+        R.id.blueRadioButton -> Color.BLUE
+        R.id.greenRadioButton -> Color.GREEN
+        else -> Color.WHITE
+    }
+    window.decorView.setBackgroundColor(color)
+}`,
+            ],
+          },
+          {
+            title: "Radio group & background color",
+            id: "radio-group-background-color",
+            codeSnippets: [
+              `
+// Import statements
+import android.graphics.Color
+import android.widget.RadioGroup
+import android.widget.RadioButton
+
+// Kotlin code snippet for radio group and background color
+val colorRadioGroup: RadioGroup = findViewById(R.id.colorRadioGroup)
+
+colorRadioGroup.setOnCheckedChangeListener { group, checkedId ->
+    val selectedRadioButton: RadioButton = findViewById(checkedId)
+    val color = when (selectedRadioButton.id) {
+        R.id.redRadioButton -> Color.RED
+        R.id.blueRadioButton -> Color.BLUE
+        R.id.greenRadioButton -> Color.GREEN
+        else -> Color.WHITE
+    }
+    window.decorView.setBackgroundColor(color)
+}
+`,
+            ],
+          },
+          {
+            title: "Notification",
+            id: "notification",
+            codeSnippets: [
+              `
+// Kotlin code snippet to create a notification
+private fun createNotification() {
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+        val name = "My Channel"
+        val descriptionText = "My Notification Channel"
+        val importance = NotificationManager.IMPORTANCE_DEFAULT
+        val channel = NotificationChannel(CHANNEL_ID, name, importance).apply {
+            description = descriptionText
+        }
+        val notificationManager =
+            getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+        notificationManager.createNotificationChannel(channel)
+    }
+    val builder = NotificationCompat.Builder(this, CHANNEL_ID)
+        .setSmallIcon(android.R.drawable.ic_dialog_info)
+        .setContentTitle("My Notification")
+        .setContentText("This is a basic notification.")
+        .setPriority(NotificationCompat.PRIORITY_DEFAULT)
+}`,
+            ],
+          },
+          {
+            title: "Show alert",
+            id: "show-alert",
+            codeSnippets: [
+              `
+// Kotlin code snippet to show an alert dialog
+private fun showAlertDialog() {
+    val alertDialogBuilder = AlertDialog.Builder(this)
+    alertDialogBuilder.setTitle("Alert Dialog")
+    alertDialogBuilder.setMessage("This is a basic AlertDialog.")
+    alertDialogBuilder.setPositiveButton("OK") { dialog, which ->
+        // Handle positive button click if needed
+    }
+    alertDialogBuilder.setNegativeButton("Cancel") { dialog, which ->
+        // Handle negative button click if needed
+    }
+    val alertDialog = alertDialogBuilder.create()
+    alertDialog.show()
+}`,
+            ],
+          },
+          {
+            title: "Intent",
+            id: "intent",
+            codeSnippets: [
+              `
+// Kotlin code snippet to create an intent and start a new activity
+val intent = Intent(this, SecondActivity::class.java)
+startActivity(intent)`,
+            ],
+          },
+          {
+            title: "Media Player",
+            id: "media-player",
+            codeSnippets: [
+              `
+package com.example.endsem
+
+import android.media.MediaPlayer
+import androidx.appcompat.app.AppCompatActivity
+import android.os.Bundle
+import android.widget.Button
+import android.widget.SeekBar
+
+class MainActivity : AppCompatActivity() {
+
+    private lateinit var mediaPlayer: MediaPlayer
+    private lateinit var playPauseButton: Button
+    private lateinit var seekBar: SeekBar
+    private lateinit var rewindButton: Button
+    private lateinit var forwardButton: Button
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setContentView(R.layout.activity_main)
+
+        mediaPlayer = MediaPlayer.create(this, R.raw.sample_audio)
+        mediaPlayer.isLooping = true // Loop the audio
+
+        playPauseButton = findViewById(R.id.playPauseButton)
+        seekBar = findViewById(R.id.seekBar)
+        rewindButton = findViewById(R.id.rewindButton)
+        forwardButton = findViewById(R.id.forwardButton)
+
+        playPauseButton.setOnClickListener {
+            if (mediaPlayer.isPlaying) {
+                mediaPlayer.pause()
+                playPauseButton.text = "Play"
+            } else {
+                mediaPlayer.start()
+                playPauseButton.text = "Pause"
+            }
+        }
+
+        rewindButton.setOnClickListener {
+            mediaPlayer.seekTo(mediaPlayer.currentPosition - 5000)
+        }
+
+        forwardButton.setOnClickListener {
+            mediaPlayer.seekTo(mediaPlayer.currentPosition + 5000)
+        }
+
+        // Update seek bar as audio plays
+        seekBar.max = mediaPlayer.duration
+        Thread {
+            while (true) {
+                runOnUiThread {
+                    seekBar.progress = mediaPlayer.currentPosition
+                }
+                Thread.sleep(1000)
+            }
+        }.start()
+
+        seekBar.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
+            override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
+                if (fromUser) {
+                    mediaPlayer.seekTo(progress)
+                }
+            }
+
+            override fun onStartTrackingTouch(seekBar: SeekBar?) {}
+
+            override fun onStopTrackingTouch(seekBar: SeekBar?) {}
+        })
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        mediaPlayer.release() // Release resources when activity is destroyed
+    }
+}`,
+            ],
+          },
+          {
+            title: "Media Player",
+            id: "media-player",
+            codeSnippets: [
+              `<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".MainActivity">
+
+    <SeekBar
+        android:id="@+id/seekBar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_centerVertical="true"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp"
+        android:layout_toStartOf="@id/forwardButton"
+        android:layout_toEndOf="@id/rewindButton" />
+
+    <Button
+        android:id="@+id/rewindButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentStart="true"
+        android:layout_centerVertical="true"
+        android:text="Rewind" />
+
+    <Button
+        android:id="@+id/playPauseButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_centerVertical="true"
+        android:text="Play" />
+
+    <Button
+        android:id="@+id/forwardButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentEnd="true"
+        android:layout_centerVertical="true"
+        android:text="Forward" />
+
+</RelativeLayout>`,
+            ],
+          },
+          {
+            title: "Database Helper",
+            id: "database-helper",
+            codeSnippets: [
+              `package com.example.db
+
+import android.annotation.SuppressLint
+import android.content.ContentValues
+import android.content.Context
+import android.database.Cursor
+import android.database.sqlite.SQLiteDatabase
+import android.database.sqlite.SQLiteOpenHelper
+import android.util.Log
+
+class DatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME, null, DATABASE_VERSION) {
+
+    companion object {
+        private const val DATABASE_VERSION = 1
+        private const val DATABASE_NAME = "StudentDB"
+        private const val TABLE_NAME = "Students"
+        private const val COL_ID = "id"
+        private const val COL_ROLL_NUMBER = "roll_number"
+        private const val COL_NAME = "name"
+        private const val COL_CGPA = "cgpa"
+    }
+
+    override fun onCreate(db: SQLiteDatabase?) {
+        Log.d("Db on create","When this shiz is called")
+        val createTable = "CREATE TABLE IF NOT EXISTS $TABLE_NAME ($COL_ID INTEGER PRIMARY KEY AUTOINCREMENT, $COL_ROLL_NUMBER INTEGER, $COL_NAME TEXT, $COL_CGPA REAL)"
+        db?.execSQL(createTable)
+    }
+
+    override fun onUpgrade(db: SQLiteDatabase?, oldVersion: Int, newVersion: Int) {
+        db?.execSQL("DROP TABLE IF EXISTS $TABLE_NAME")
+        onCreate(db)
+    }
+
+    fun addStudent(student: Student): Long {
+        val db = this.writableDatabase
+        val values = ContentValues()
+        values.put(COL_ROLL_NUMBER, student.rollNumber)
+        values.put(COL_NAME, student.name)
+        values.put(COL_CGPA, student.cgpa)
+        val result = db.insert(TABLE_NAME, null, values)
+        db.close()
+        return result
+    }
+
+    @SuppressLint("Range")
+    fun getAllStudents(): ArrayList<Student> {
+        val students = ArrayList<Student>()
+        val db = this.readableDatabase
+        val query = "SELECT * FROM $TABLE_NAME"
+        val cursor = db.rawQuery(query, null)
+        if (cursor.moveToFirst()) {
+            do {
+                val id = cursor.getInt(cursor.getColumnIndex(COL_ID))
+                Log.d("Get students id", "$id")
+                val rollNumber = cursor.getInt(cursor.getColumnIndex(COL_ROLL_NUMBER))
+                val name = cursor.getString(cursor.getColumnIndex(COL_NAME))
+                val cgpa = cursor.getDouble(cursor.getColumnIndex(COL_CGPA))
+                students.add(Student(id, rollNumber, name, cgpa))
+            } while (cursor.moveToNext())
+        }
+        cursor.close()
+        db.close()
+        return students
+    }
+
+    fun deleteStudent(studentId: Int): Int {
+        val db = this.writableDatabase
+        Log.d("Delete Id", "$studentId")
+        val result = db.delete(TABLE_NAME, "$COL_ID=?", arrayOf(studentId.toString()))
+        db.close()
+        return result
+    }
+}`,
+            ],
+          },
+          {
+            title: "Database Helper",
+            id: "database-helper",
+            codeSnippets: [
+              `package com.example.db
+
+import android.annotation.SuppressLint
+import android.content.Context
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
+import android.widget.BaseAdapter
+import android.widget.Button
+import android.widget.TextView
+
+class StudentAdapter(private val context: Context, private val students: ArrayList<Student>) : BaseAdapter() {
+
+    override fun getCount(): Int {
+        return students.size
+    }
+
+    override fun getItem(position: Int): Any {
+        return students[position]
+    }
+
+    override fun getItemId(position: Int): Long {
+        return students[position].id.toLong()
+    }
+
+    @SuppressLint("SetTextI18n")
+    override fun getView(position: Int, convertView: View?, parent: ViewGroup?): View {
+        var view = convertView
+        if (view == null) {
+            val inflater = context.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
+            view = inflater.inflate(R.layout.student_item, parent, false)
+        }
+
+        val student = students[position]
+        view?.findViewById<TextView>(R.id.rollNumberTextView)?.text = "Roll Number: \${student.rollNumber}"
+        view?.findViewById<TextView>(R.id.nameTextView)?.text = "Name: \${student.name}"
+        view?.findViewById<TextView>(R.id.cgpaTextView)?.text = "CGPA: \${student.cgpa}"
+
+        val deleteButton = view?.findViewById<Button>(R.id.deleteButton)
+        deleteButton?.setOnClickListener {
+            val studentToDelete = getItemId(position).toInt() // Get the item id corresponding to the clicked delete button
+            val dbHelper = DatabaseHelper(context)
+            dbHelper.deleteStudent(studentToDelete)
+            students.removeAt(position)
+            notifyDataSetChanged()
+        }
+
+        return view!!
+    }
+}`,
+            ],
+          },
+          {
+            title: "Database Helpet",
+            id: "database-helper",
+            codeSnippets: [
+              `package com.example.db
+
+import android.os.Bundle
+import android.widget.Button
+import android.widget.EditText
+import android.widget.ListView
+import androidx.appcompat.app.AppCompatActivity
+
+class MainActivity : AppCompatActivity() {
+
+    private lateinit var listView: ListView
+    private lateinit var addButton: Button
+    private lateinit var rollNumberEditText: EditText
+    private lateinit var nameEditText: EditText
+    private lateinit var cgpaEditText: EditText
+    private lateinit var dbHelper: DatabaseHelper
+    private lateinit var studentAdapter: StudentAdapter
+    private lateinit var students: ArrayList<Student>
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setContentView(R.layout.activity_main)
+
+        dbHelper = DatabaseHelper(this)
+        listView = findViewById(R.id.listView)
+        addButton = findViewById(R.id.addButton)
+        rollNumberEditText = findViewById(R.id.rollNumberEditText)
+        nameEditText = findViewById(R.id.nameEditText)
+        cgpaEditText = findViewById(R.id.cgpaEditText)
+        students = dbHelper.getAllStudents()
+        studentAdapter = StudentAdapter(this, students)
+        listView.adapter = studentAdapter
+
+        addButton.setOnClickListener {
+            val rollNumber = rollNumberEditText.text.toString().toInt()
+            val name = nameEditText.text.toString()
+            val cgpa = cgpaEditText.text.toString().toDouble()
+
+            val newStudent = Student(0, rollNumber, name, cgpa)
+            dbHelper.addStudent(newStudent)
+            refreshStudentList()
+
+            // Clear input fields after adding the student
+            rollNumberEditText.text.clear()
+            nameEditText.text.clear()
+            cgpaEditText.text.clear()
+        }
+    }
+
+    private fun refreshStudentList() {
+        students.clear()
+        students.addAll(dbHelper.getAllStudents())
+        studentAdapter.notifyDataSetChanged()
+    }
+}`,
+            ],
+          },
+          {
+            title: "Database Helper",
+            id: "database-helper",
+            codeSnippets: [
+              `<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <EditText
+        android:id="@+id/rollNumberEditText"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Enter Roll Number"
+        android:inputType="number" />
+
+    <EditText
+        android:id="@+id/nameEditText"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/rollNumberEditText"
+        android:hint="Enter Name" />
+
+    <EditText
+        android:id="@+id/cgpaEditText"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/nameEditText"
+        android:hint="Enter CGPA"
+        android:inputType="numberDecimal" />
+
+    <Button
+        android:id="@+id/addButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/cgpaEditText"
+        android:layout_centerHorizontal="true"
+        android:text="Add Student" />
+
+    <ListView
+        android:id="@+id/listView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@id/addButton" />
+
+</RelativeLayout>`,
+            ],
+          },
+        ];
+        const tutorialTabs = document.getElementById("tutorialTabs");
+        const tutorialContent = document.getElementById("tutorialContent");
+
+        const tabIds = []; // Array to store unique tab IDs
+
+        tutorials.forEach(function (tutorial) {
+          if (!tabIds.includes(tutorial.id)) {
+            // Create tab only if the ID is not already in the array
+            const tab = document.createElement("li");
+            const tabLink = document.createElement("a");
+            tabLink.textContent = tutorial.title;
+            tabLink.href = `#${tutorial.id}`;
+            tab.appendChild(tabLink);
+            tutorialTabs.appendChild(tab);
+
+            tabIds.push(tutorial.id); // Add the ID to the array to mark it as rendered
+          }
+
+          const section = document.createElement("section");
+          section.id = tutorial.id;
+          section.className = "code-section";
+          tutorial.codeSnippets.forEach(function (snippet) {
+            const snippetCode = document.createElement("pre");
+            const code = document.createElement("code");
+            code.className = "kotlin";
+            code.textContent = snippet.trim();
+            snippetCode.appendChild(code);
+            section.appendChild(snippetCode);
+          });
+          tutorialContent.appendChild(section);
+        });
+
+        // Event listener for tabs
+        const tabs = document.querySelectorAll("nav ul li a");
+        const codeSections = document.querySelectorAll(".code-section");
+
+        tabs.forEach(function (tab) {
+          tab.addEventListener("click", function (event) {
+            event.preventDefault();
+            const selectedTabId = this.getAttribute("href").substring(1);
+
+            codeSections.forEach(function (section) {
+              section.style.display =
+                section.id === selectedTabId ? "block" : "none";
+            });
+          });
+        });
+      });
+    </script>
+  </body>
+</html>
