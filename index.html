@@ -619,6 +619,336 @@ class MainActivity : AppCompatActivity() {
 </RelativeLayout>`,
             ],
           },
+          {
+            title: "Pop Up Menu",
+            id: "pop-up-menu",
+            codeSnippets: [
+              `Pop Up Menu
+
+import android.annotation.SuppressLint
+import android.content.ContentValues
+import android.content.Context
+import android.database.sqlite.SQLiteDatabase
+import android.database.sqlite.SQLiteOpenHelper
+import android.util.Log
+import android.widget.Toast
+
+class DatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME, null, DATABASE_VERSION) {
+
+    companion object {
+        private const val DATABASE_VERSION = 1
+        private const val DATABASE_NAME = "EmployeeDB"
+        private const val TABLE_NAME = "Employee"
+        private const val COL_ID = "id"
+        private const val COL_NAME = "name"
+        private const val COL_COUNTRY = "country"
+        private const val COL_PHONE = "phone"
+    }
+
+    override fun onCreate(db: SQLiteDatabase?) {
+        Log.d("Db on create","When this shiz is called")
+        val createTable = "CREATE TABLE IF NOT EXISTS $TABLE_NAME ($COL_ID INTEGER PRIMARY KEY AUTOINCREMENT, $COL_NAME TEXT, $COL_COUNTRY TEXT, $COL_PHONE TEXT)"
+        db?.execSQL(createTable)
+    }
+
+    override fun onUpgrade(db: SQLiteDatabase?, oldVersion: Int, newVersion: Int) {
+        db?.execSQL("DROP TABLE IF EXISTS $TABLE_NAME")
+        onCreate(db)
+    }
+
+    fun addEmployee(employee: Employee): Long {
+        val db = this.writableDatabase
+        val values = ContentValues()
+        values.put(COL_COUNTRY, employee.country)
+        values.put(COL_NAME, employee.name)
+        values.put(COL_PHONE, employee.phone)
+        val result = db.insert(TABLE_NAME, null, values)
+        db.close()
+        return result
+    }
+
+    @SuppressLint("Range")
+    fun getCountries(): ArrayList<String> {
+        val countries = ArrayList<String>()
+        val db = this.readableDatabase
+        val query = "SELECT distinct $COL_COUNTRY from $TABLE_NAME"
+        val cursor = db.rawQuery(query, null)
+        if (cursor.moveToFirst()) {
+            do {
+                val country = cursor.getString(cursor.getColumnIndex(COL_COUNTRY))
+                countries.add(country)
+                Log.d("Get students country", country)
+            } while (cursor.moveToNext())
+        }
+        cursor.close()
+        db.close()
+        return countries
+    }
+
+    @SuppressLint("Range")
+    fun getAllEmployees(): ArrayList<Employee> {
+        val employees = ArrayList<Employee>()
+        val db = this.readableDatabase
+        val query = "SELECT * FROM $TABLE_NAME"
+        val cursor = db.rawQuery(query, null)
+        if (cursor.moveToFirst()) {
+            do {
+                val id = cursor.getInt(cursor.getColumnIndex(COL_ID))
+                Log.d("Get students id", "$id")
+                val country = cursor.getString(cursor.getColumnIndex(COL_COUNTRY))
+                val name = cursor.getString(cursor.getColumnIndex(COL_NAME))
+                val phone = cursor.getString(cursor.getColumnIndex(COL_PHONE))
+                employees.add(Employee(name, country, phone))
+            } while (cursor.moveToNext())
+        }
+        cursor.close()
+        db.close()
+        return employees
+    }
+
+    @SuppressLint("Range")
+    fun getEmployees(country: String): String{
+        val stringBuilder = StringBuilder()
+        val db = this.readableDatabase
+        val query = "SELECT * FROM $TABLE_NAME where $COL_COUNTRY='$country' order by $COL_ID asc"
+        val cursor = db.rawQuery(query, null)
+        if (cursor.moveToFirst()) {
+            do {
+                val id = cursor.getInt(cursor.getColumnIndex(COL_ID))
+                Log.d("Get students id", "$id")
+                val country = cursor.getString(cursor.getColumnIndex(COL_COUNTRY))
+                val name = cursor.getString(cursor.getColumnIndex(COL_NAME))
+                val phone = cursor.getString(cursor.getColumnIndex(COL_PHONE))
+                stringBuilder.append("$id\t$name\t$country\t$phone\n")
+            } while (cursor.moveToNext())
+        }
+        cursor.close()
+        db.close()
+        return stringBuilder.toString()
+    }
+
+    @SuppressLint("Range")
+    fun updateEmployees(empId: Int,country: String): Int{
+        val db = this.writableDatabase
+        val values = ContentValues()
+        values.put(COL_COUNTRY, country)
+        val result = db.update(TABLE_NAME, values, "$COL_ID=?", arrayOf("$empId"))
+        db.close()
+        return result
+    }
+
+//    fun deleteStudent(studentId: Int): Int {
+//        val db = this.writableDatabase
+//        Log.d("Delete Id", "$studentId")
+//        val result = db.delete(TABLE_NAME, "$COL_ID=?", arrayOf(studentId.toString()))
+//        db.close()
+//        return result
+//    }
+}
+`,
+            ],
+          },
+          {
+            title: "Pop Up Menu",
+            id: "pop-up-menu",
+            codeSnippets: [
+              `import android.content.Intent
+import android.os.Bundle
+import android.widget.Button
+import android.widget.EditText
+import android.widget.Toast
+import androidx.activity.enableEdgeToEdge
+import androidx.appcompat.app.AppCompatActivity
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
+
+class MainActivity : AppCompatActivity() {
+    private lateinit var dbHelper: DatabaseHelper
+    private  lateinit var nameEdit: EditText
+    private  lateinit var phoneEdit: EditText
+    private  lateinit var countryEdit: EditText
+    private  lateinit var addButton: Button
+    private  lateinit var viewButton: Button
+    private lateinit var updateButton: Button
+    private  lateinit var  updateId : EditText
+    private  lateinit var updateCountry: EditText
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        enableEdgeToEdge()
+        setContentView(R.layout.activity_main)
+        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->
+            val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
+            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
+            insets
+        }
+        dbHelper = DatabaseHelper(this)
+        nameEdit = findViewById(R.id.namEdit)
+        countryEdit = findViewById(R.id.countryEdit)
+        phoneEdit = findViewById(R.id.phoneEdit)
+        addButton = findViewById(R.id.addButton)
+        updateButton = findViewById(R.id.updateButton)
+        updateId = findViewById(R.id.updateId)
+        updateCountry = findViewById(R.id.countryUpdate)
+        viewButton = findViewById(R.id.viewButton)
+
+        updateButton.setOnClickListener {
+            val empId = updateId.text.toString().toInt()
+            val countryName = updateCountry.text.toString()
+            val result = dbHelper.updateEmployees(empId, countryName)
+            if(result==-1){
+                showToast("Update failed")
+            }
+            else{
+                showToast("Update Success")
+            }
+        }
+
+        viewButton.setOnClickListener{
+            val intent = Intent(this, MainActivity2::class.java)
+            startActivity(intent)
+        }
+
+        addButton.setOnClickListener{
+            val name = nameEdit.text.toString()
+            val country = countryEdit.text.toString()
+            val phone = phoneEdit.text.toString()
+            if(name.isEmpty()||country.isEmpty()||phone.isEmpty()) {
+                showToast("No fields can be empty")
+                return@setOnClickListener
+            }
+            val response = dbHelper.addEmployee(Employee(name, country, phone))
+            if(response.toInt() ==-1){
+                showToast("Failed to add student")
+            }
+            else{
+                showToast("Added student successfully")
+            }
+        }
+
+    }
+
+    fun showToast(msg: String){
+        Toast.makeText(this, msg, Toast.LENGTH_SHORT).show()
+    }
+}
+
+`,
+            ],
+          },
+          {
+            title: "Pop Up Menu",
+            id: "pop-up-menu",
+            codeSnippets: [
+              `import android.os.Bundle
+import android.widget.Button
+import android.widget.PopupMenu
+import android.widget.TextView
+import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
+
+class MainActivity2 : AppCompatActivity() {
+    lateinit var button: Button
+    lateinit var dbHelper: DatabaseHelper
+    lateinit var displayView: TextView
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setContentView(R.layout.activity_main2)
+        dbHelper = DatabaseHelper(this)
+        button = findViewById(R.id.clickBtn)
+        displayView = findViewById(R.id.viewText)
+
+        // Setting onClick behavior to the button
+        button.setOnClickListener {
+
+            val countries = dbHelper.getCountries()
+            val popupMenu = PopupMenu(this@MainActivity2, button)
+            for (country in countries) {
+                popupMenu.menu.add(country)
+            }
+            popupMenu.setOnMenuItemClickListener { menuItem ->
+                val employees = dbHelper.getEmployees(menuItem.title.toString())
+                displayView.text = employees
+                Toast.makeText(this@MainActivity2, "You Clicked " + menuItem.title, Toast.LENGTH_SHORT).show()
+                true
+            }
+            // Showing the popup menu
+            popupMenu.show()
+        }
+    }
+}`,
+            ],
+          },
+          {
+            title: "Pop Up Menu",
+            id: "pop-up-menu",
+            codeSnippets: [
+              `<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".MainActivity">
+
+    <Button
+        android:id="@+id/clickBtn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="#0F9D58"
+        android:text="Click Me"
+        android:textColor="#ffffff"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.115" />
+
+    <TextView
+        android:id="@+id/viewText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="TextView"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.141"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.283" />
+</androidx.constraintlayout.widget.ConstraintLayout>`,
+            ],
+          },
+          {
+            title: "Pop Up Menu",
+            id: "pop-up-menu",
+            codeSnippets: [
+              `<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/java"
+        android:title="Java" />
+
+    <item
+        android:id="@+id/kotlin"
+        android:title="Kotlin" />
+
+    <item
+        android:id="@+id/android"
+        android:title="Android" />
+
+    <item
+        android:id="@+id/react_native"
+        android:title="React Native" />
+</menu>`,
+            ],
+          },
+          {
+            title: "Pop Up Menu",
+            id: "pop-up-menu",
+            codeSnippets: [
+              `data class Employee(val name: String, val country: String, val phone: String)`,
+            ],
+          },
         ];
         const tutorialTabs = document.getElementById("tutorialTabs");
         const tutorialContent = document.getElementById("tutorialContent");
